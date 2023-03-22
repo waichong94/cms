@@ -6,10 +6,17 @@ const multer = require("multer");
 const app = express();
 const upload = multer();
 
+const db = require(__dirname + "/database.js").connection;
+
 // Handle incoming data (form-data, urlencoded, json)
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(upload.none());
+
+app.use((req,res,next) => {
+  req.db = db;
+  next();
+})
 
 const userRoutes = require("./app/routes/userRoutes");
 app.use("/api/user", userRoutes);
