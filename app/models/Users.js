@@ -52,25 +52,40 @@ exports.update = async (params,db) => {
 }
 
 exports.add = async (params,db) => {
-    return await new Promise((resolve, reject) => {
-        let sql = "INSERT INTO users (username, password, name, mobileno) VALUES (?, ?, ?, ?)";
-        db.query(sql, [params['username'], params['password'], params['name'], params['mobileno']], (err, data) => {
-            if (err) throw err;
-
-            if(data.affectedRows == 0){
+    try{
+        return await new Promise((resolve, reject) => {
+            let sql = "INSERT INTO users (username, password, name, mobileno) VALUES (?, ?, ?, ?)";
+            db.query(sql, [params['username'], params['password'], params['name'], params['mobileno']], (err, data) => {
+                if (err) {
+                    return resolve(
+                        {
+                            "status" : false,
+                            "msg" : err.message
+                        }
+                    )
+                }
+    
+                if(data.affectedRows == 0){
+                    return resolve(
+                        {
+                            "status" : false,
+                            "msg" : "No changes."
+                        }
+                    )
+                }
                 return resolve(
                     {
-                        "status" : false,
-                        "msg" : "No changes."
+                        "status" : true,
+                        "msg" : "Success",
                     }
                 )
-            }
-            return resolve(
-                {
-                    "status" : true,
-                    "msg" : "Success",
-                }
-            )
-        })
-    });
+            })
+        });
+    }catch(e){
+        return {
+            "status" : false,
+            "msg" : err.msg
+        }
+    }
+   
 }
